@@ -1,10 +1,10 @@
 {
     "name": "@ratmath/stdlib",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "type": "module",
     "main": "src/index.js",
     "dependencies": {
-        "@ratmath/core": "workspace:*",
-        "@ratmath/algebra": "workspace:*"
+        "@ratmath/core": "^0.2.0",
+        "@ratmath/algebra": "^0.2.0"
     }
 }
