@@ -1,0 +1,24 @@
+Core Functions - Standard Library
+
+Basic control flow and variable management functions.
+
+VARIABLE MANAGEMENT:
+  GETVAR(name, default)   - Get variable value, or default if not set
+  ASSIGN(name, value)     - Assign value to a variable
+  GLOBAL(name, value)     - Create/set a global variable
+
+CONTROL FLOW:
+  IF(cond, then, else)    - Lazy conditional: evaluates only the chosen branch
+  MULTI(expr1, expr2, ..) - Evaluate multiple expressions, return last result
+
+EXAMPLES:
+  ASSIGN("x", 5)          → Sets x = 5
+  GETVAR("x", 0)          → Returns 5 (or 0 if x not set)
+  IF(1, 10, 1/0)          → Returns 10 (doesn't evaluate 1/0)
+  IF(0, 1/0, 20)          → Returns 20 (doesn't evaluate 1/0)
+  MULTI(x=1, y=2, x+y)    → Returns 3
+
+NOTES:
+  - IF is lazy: only the selected branch is evaluated
+  - This prevents division by zero errors in unused branches
+  - GLOBAL creates variables accessible from any scope

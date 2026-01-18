@@ -1,0 +1,37 @@
+List Functions - Standard Library
+
+Functions for working with sequences and lists.
+
+BASIC OPERATIONS:
+  LEN(list)               - Length of a list
+  GET(list, index)        - Get element at index (1-based, negative from end)
+
+AGGREGATION (built-in syntax):
+  SUM[i](expr, start, end)      - Sum expr for i from start to end
+  PROD[i](expr, start, end)     - Product expr for i from start to end
+  SEQ[i](expr, start, end, step) - Generate sequence
+
+HIGHER-ORDER FUNCTIONS:
+  MAP(list, "Func")       - Apply Func to each element
+  FILTER(list, "Pred")    - Keep elements where Pred returns non-zero
+  REDUCE(list, "Func", init) - Reduce list using binary Func
+  SOME(list, "Pred")      - Returns 1 if any element satisfies Pred
+  ALL(list, "Pred")       - Returns 1 if all elements satisfy Pred
+
+LIST LITERALS:
+  [1, 2, 3]               - Create a list
+  LIST = [1, 2, 3]        - Assign list to accessor
+  LIST(1)                 - Get first element
+  LIST(-1)                - Get last element
+
+EXAMPLES:
+  LEN([1, 2, 3])          → 3
+  SUM[i](i^2, 1, 5)       → 55 (1+4+9+16+25)
+  PROD[i](i, 1, 5)        → 120 (5!)
+  SEQ[k](k^2, 1, 4)       → [1, 4, 9, 16]
+
+  Double(x) -> 2*x
+  MAP([1, 2, 3], "Double") → [2, 4, 6]
+
+  IsEven(x) -> EQ(x - 2*(x/2), 0)
+  FILTER([1,2,3,4], "IsEven") → [2, 4]

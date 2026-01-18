@@ -1,0 +1,40 @@
+String Functions - Standard Library
+
+Functions for string manipulation.
+
+BASIC OPERATIONS:
+  STRLEN(str)             - Length of string
+  CHARAT(str, idx)        - Character at index (0-based)
+  SUBSTR(str, start, len) - Extract substring
+  CONCAT(s1, s2, ...)     - Concatenate strings
+
+SEARCH:
+  INDEXOF(str, search)    - Find index of substring (-1 if not found)
+  CONTAINS(str, search)   - Returns 1 if contains, 0 otherwise
+  STARTSWITH(str, prefix) - Returns 1 if starts with prefix
+  ENDSWITH(str, suffix)   - Returns 1 if ends with suffix
+
+TRANSFORMATION:
+  UPPER(str)              - Convert to uppercase
+  LOWER(str)              - Convert to lowercase
+  TRIM(str)               - Remove leading/trailing whitespace
+  REPLACE(str, old, new)  - Replace all occurrences
+  REVERSE(str)            - Reverse string
+  REPEAT(str, count)      - Repeat string n times
+
+SPLITTING & JOINING:
+  SPLIT(str, delimiter)   - Split into list
+  JOIN(list, delimiter)   - Join list into string
+
+CONVERSION:
+  TOSTR(value)            - Convert value to string
+  CHARCODE(str, idx?)     - Get character code at index
+  FROMCHARCODE(c1, ...)   - Create string from char codes
+
+EXAMPLES:
+  STRLEN("hello")         → 5
+  UPPER("hello")          → "HELLO"
+  CONCAT("a", "b", "c")   → "abc"
+  SPLIT("a,b,c", ",")     → ["a", "b", "c"]
+  JOIN(["x","y"], "-")    → "x-y"
+  REPLACE("aaa", "a", "b") → "bbb"

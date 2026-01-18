@@ -1,0 +1,29 @@
+Logic Functions - Standard Library
+
+Comparison and boolean operations. Returns 1 for true, 0 for false.
+
+COMPARISON:
+  EQ(a, b)      - Equal: returns 1 if a == b
+  NE(a, b)      - Not equal: returns 1 if a != b
+  GT(a, b)      - Greater than: returns 1 if a > b
+  LT(a, b)      - Less than: returns 1 if a < b
+  GE(a, b)      - Greater or equal: returns 1 if a >= b
+  LE(a, b)      - Less or equal: returns 1 if a <= b
+
+BOOLEAN OPERATIONS:
+  AND(a, b)     - Logical AND: returns 1 if both non-zero
+  OR(a, b)      - Logical OR: returns 1 if either non-zero
+  NOT(a)        - Logical NOT: returns 1 if a is zero
+
+EXAMPLES:
+  EQ(5, 5)      → 1
+  GT(10, 5)     → 1
+  LT(10, 5)     → 0
+  AND(1, 1)     → 1
+  AND(1, 0)     → 0
+  OR(1, 0)      → 1
+  NOT(0)        → 1
+
+COMBINING WITH IF:
+  IF(GT(x, 0), x, 0)      → Returns x if positive, else 0
+  IF(AND(GT(x,0), LT(x,10)), x, -1)  → Returns x if 0<x<10
