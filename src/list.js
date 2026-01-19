@@ -59,9 +59,14 @@ export const List = {
             const result = [];
             const chain = this._currentScopeChain;
 
+            // Extract function name from string object or raw string
+            let fname = funcName;
+            if (funcName?.type === 'string') fname = funcName.value;
+            else if (typeof funcName === 'string') fname = funcName.replace(/^"|"$/g, '');
+
             for (const item of list.values) {
                 const itemStr = this.formatValueWithPrefix(item);
-                const expr = `${funcName}(${itemStr})`;
+                const expr = `${fname}(${itemStr})`;
                 const r = this.evaluateExpression(expr, chain);
                 if (r.type === 'error') throw new Error(`MAP Error: ${r.message}`);
                 result.push(r.result);
@@ -104,10 +109,15 @@ export const List = {
             let accumulator = initial;
             const chain = this._currentScopeChain;
 
+            // Extract function name from string object or raw string
+            let fname = funcName;
+            if (funcName?.type === 'string') fname = funcName.value;
+            else if (typeof funcName === 'string') fname = funcName.replace(/^"|"$/g, '');
+
             for (const item of list.values) {
                 const accStr = this.formatValueWithPrefix(accumulator);
                 const itemStr = this.formatValueWithPrefix(item);
-                const expr = `${funcName}(${accStr}, ${itemStr})`;
+                const expr = `${fname}(${accStr}, ${itemStr})`;
                 const r = this.evaluateExpression(expr, chain);
                 if (r.type === 'error') throw new Error(`REDUCE Error: ${r.message}`);
                 accumulator = r.result;

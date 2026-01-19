@@ -4,22 +4,36 @@ import { Rational, Integer } from "@ratmath/core";
 export const Core = {
     GETVAR: {
         handler: function (nameStr, level = 0) {
-            let name = nameStr.toString().trim();
-            if (name.startsWith('"') && name.endsWith('"')) {
-                name = name.slice(1, -1);
+            // Handle string objects from evaluation
+            let name;
+            if (nameStr?.type === 'string') {
+                name = nameStr.value;
+            } else if (typeof nameStr === 'string') {
+                name = nameStr.trim();
+                if (name.startsWith('"') && name.endsWith('"')) {
+                    name = name.slice(1, -1);
+                }
+            } else {
+                name = nameStr.toString().trim();
             }
             // level might be BigInt/Integer from eval
-            const lvl = Number(level.toString());
+            const lvl = Number(level?.toString?.() ?? level);
 
-            const chain = this._currentScopeChain || [new Map()];
+            const chain = this._currentScopeChain;
 
             if (lvl === -1) {
                 return this.variables.get(name);
             }
 
-            if (lvl >= 0 && lvl < chain.length) {
+            // If chain exists, look in the specified scope level
+            if (chain && lvl >= 0 && lvl < chain.length) {
                 const scope = chain[lvl];
                 if (scope && scope.has(name)) return scope.get(name);
+            }
+
+            // Fallback to global variables when no chain or not found in chain at level 0
+            if (lvl === 0 && this.variables.has(name)) {
+                return this.variables.get(name);
             }
 
             return undefined;

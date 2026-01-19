@@ -19,12 +19,17 @@ export const StringFunctions = {
     },
 
     CONCAT: {
-        handler: function (...args) {
-            const parts = args.map(a => extractString(a));
+        handler: function (str1) {
+            // Get all arguments via @@ sequence for unlimited concat
+            const allArgs = this._currentCallScope?.get("@@");
+            if (!allArgs || allArgs.type !== 'sequence') {
+                return { type: 'string', value: extractString(str1) };
+            }
+            const parts = allArgs.values.map(a => extractString(a));
             return { type: 'string', value: parts.join('') };
         },
-        params: ['str1', 'str2', '...'],
-        doc: "Concatenates multiple strings"
+        params: ['str1'],
+        doc: "Concatenates unlimited strings"
     },
 
     SUBSTR: {
@@ -202,12 +207,17 @@ export const StringFunctions = {
     },
 
     FROMCHARCODE: {
-        handler: function (...codes) {
-            const chars = codes.map(c => String.fromCharCode(Number(c.toString())));
+        handler: function (c1) {
+            // Get all arguments via @@ sequence for unlimited char codes
+            const allArgs = this._currentCallScope?.get("@@");
+            if (!allArgs || allArgs.type !== 'sequence') {
+                return { type: 'string', value: String.fromCharCode(Number(c1.toString())) };
+            }
+            const chars = allArgs.values.map(c => String.fromCharCode(Number(c.toString())));
             return { type: 'string', value: chars.join('') };
         },
-        params: ['code', '...'],
-        doc: "Create string from character codes"
+        params: ['code1'],
+        doc: "Create string from unlimited character codes"
     }
 };
 
