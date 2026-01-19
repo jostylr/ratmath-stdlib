@@ -4,34 +4,61 @@ Functions for working with sequences and lists.
 
 BASIC OPERATIONS:
   LEN(list)               - Length of a list
-  GET(list, index)        - Get element at index (1-based, negative from end)
+  GETEL(list, index)      - Get element at index (1-based, negative from end)
+  FIRST(list)             - Get first element
+  LAST(list)              - Get last element
+
+RANGE GENERATION:
+  IRANGE(start, end, step?) - Generate integers from start to end
+  RANGE(a:b, numSteps)      - Generate numSteps evenly spaced values over interval a:b
 
 AGGREGATION (built-in syntax):
-  SUM[i](expr, start, end)      - Sum expr for i from start to end
-  PROD[i](expr, start, end)     - Product expr for i from start to end
+  SUM[i](expr, start, end)       - Sum expr for i from start to end
+  PROD[i](expr, start, end)      - Product expr for i from start to end
   SEQ[i](expr, start, end, step) - Generate sequence
 
 HIGHER-ORDER FUNCTIONS:
-  MAP(list, "Func")       - Apply Func to each element
-  FILTER(list, "Pred")    - Keep elements where Pred returns non-zero
-  REDUCE(list, "Func", init) - Reduce list using binary Func
-  SOME(list, "Pred")      - Returns 1 if any element satisfies Pred
-  ALL(list, "Pred")       - Returns 1 if all elements satisfy Pred
+  MAP(list, Func)         - Apply Func(element, index, list) to each element
+  FILTER(list, Pred)      - Keep elements where Pred(element, index, list) ≠ 0
+  REDUCE(list, Func, init)- Reduce using Func(accumulator, element, index, list)
+  SOME(list, Pred)        - Returns 1 if any element satisfies Pred
+  ALL(list, Pred)         - Returns 1 if all elements satisfy Pred
 
-LIST LITERALS:
+  Note: Functions receive (element, index, list) but can ignore unused parameters.
+  The index is 1-based.
+
+LIST LITERALS & ACCESSORS:
   [1, 2, 3]               - Create a list
-  LIST = [1, 2, 3]        - Assign list to accessor
-  LIST(1)                 - Get first element
-  LIST(-1)                - Get last element
+  L = [1, 2, 3]           - Assign list to accessor L
+  L(1)                    - Get first element
+  L(-1)                   - Get last element
+  L(0)                    - Get full list (sequence)
+
+  List functions work with both raw sequences and list accessors:
+  MAP(L, Func)            - Works (auto-unwraps accessor)
+  MAP(L(0), Func)         - Also works (explicit sequence)
 
 EXAMPLES:
   LEN([1, 2, 3])          → 3
+  GETEL([10, 20, 30], 2)  → 20
+  FIRST([5, 10, 15])      → 5
+  LAST([5, 10, 15])       → 15
+
+  IRANGE(1, 5)            → [1, 2, 3, 4, 5]
+  RANGE(0:1, 5)           → [0, 1/4, 1/2, 3/4, 1]
+
   SUM[i](i^2, 1, 5)       → 55 (1+4+9+16+25)
   PROD[i](i, 1, 5)        → 120 (5!)
   SEQ[k](k^2, 1, 4)       → [1, 4, 9, 16]
 
   Double(x) -> 2*x
-  MAP([1, 2, 3], "Double") → [2, 4, 6]
+  MAP([1, 2, 3], Double)  → [2, 4, 6]
 
-  IsEven(x) -> EQ(x - 2*(x/2), 0)
-  FILTER([1,2,3,4], "IsEven") → [2, 4]
+  AddIdx(x, i) -> x + i
+  MAP([10, 20, 30], AddIdx) → [11, 22, 33]
+
+  IsEven(x) -> EQ(MOD(x, 2), 0)
+  FILTER([1, 2, 3, 4], IsEven) → [2, 4]
+
+  Add(a, b) -> a + b
+  REDUCE([1, 2, 3, 4], Add, 0) → 10

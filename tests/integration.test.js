@@ -123,12 +123,33 @@ describe('StdLib Integration', () => {
         expect(res.result.values[2].toString()).toBe("4");
     });
 
-    it('should support RANGE/SEQ generation', () => {
-        const res = vm.processInput('RANGE(1, 4)');
-        if (res.type === 'error') console.error("RANGE ERROR:", res.message);
+    it('should support IRANGE (integer range) generation', () => {
+        const res = vm.processInput('IRANGE(1, 4)');
+        if (res.type === 'error') console.error("IRANGE ERROR:", res.message);
         expect(res.result.values.length).toBe(4);
         expect(res.result.values[0].toString()).toBe("1");
         expect(res.result.values[3].toString()).toBe("4");
+    });
+
+    it('should support RANGE with interval', () => {
+        // RANGE(0:1, 3) should give [0, 1/2, 1]
+        const res = vm.processInput('RANGE(0:1, 3)');
+        if (res.type === 'error') console.error("RANGE ERROR:", res.message);
+        expect(res.result.values.length).toBe(3);
+        expect(res.result.values[0].toString()).toBe("0");
+        expect(res.result.values[1].toString()).toBe("1/2");
+        expect(res.result.values[2].toString()).toBe("1");
+    });
+
+    it('should support FIRST and LAST', () => {
+        expect(vm.processInput('FIRST([10, 20, 30])').result.toString()).toBe("10");
+        expect(vm.processInput('LAST([10, 20, 30])').result.toString()).toBe("30");
+    });
+
+    it('should support GETEL', () => {
+        expect(vm.processInput('GETEL([10, 20, 30], 1)').result.toString()).toBe("10");
+        expect(vm.processInput('GETEL([10, 20, 30], 2)').result.toString()).toBe("20");
+        expect(vm.processInput('GETEL([10, 20, 30], -1)').result.toString()).toBe("30");
     });
 
 });
