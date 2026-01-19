@@ -268,22 +268,83 @@ export const ObjectFunctions = {
             
             const lines = [];
             
-            // Helper to format value simply
-            const safeFormat = (val) => {
+            // Helper to format a function definition nicely
+            const formatFuncDef = (funcName) => {
+                if (!this.functions.has(funcName)) return funcName;
+                const funcDef = this.functions.get(funcName);
+                if (funcDef.params && funcDef.body) {
+                    let body = funcDef.body.replace(/@([a-zA-Z])/g, '$1').replace(/0d(\d+)/g, '$1').trim();
+                    return `(${funcDef.params.join(", ")}) -> ${body}`;
+                }
+                return '[func]';
+            };
+            
+            // Helper to format value, with indent for nested structures
+            const formatValue = (val, indent = "") => {
                 if (val === undefined || val === null) return "undefined";
-                if (val.type === 'string') return val.value;
-                if (val.type === 'sequence') return `[${val.values.length} items]`;
-                if (val.type === 'object') return `{object}`;
+                if (val.type === 'string') {
+                    // Check if it's an anonymous lambda reference - show its definition
+                    if (val.value.startsWith('@@Anon@') && this.functions.has(val.value)) {
+                        return formatFuncDef(val.value);
+                    }
+                    // Check if it's any function reference
+                    if (this.functions.has(val.value)) {
+                        return formatFuncDef(val.value);
+                    }
+                    return val.value;
+                }
+                if (val.type === 'sequence') {
+                    // Show list items
+                    const items = val.values.map(v => {
+                        if (v?.value !== undefined) return v.value.toString();
+                        if (v?.type === 'string') return v.value;
+                        return v?.toString() || 'undefined';
+                    });
+                    return `[${items.join(", ")}]`;
+                }
+                if (val.type === 'object' && val.properties) {
+                    // Show object properties inline or nested
+                    const propStrs = [];
+                    for (const [k, v] of val.properties) {
+                        const vStr = v?.value !== undefined ? v.value.toString() : (v?.toString() || 'undefined');
+                        propStrs.push(`${k}=${vStr}`);
+                    }
+                    return `{${propStrs.join(", ")}}`;
+                }
                 if (typeof val === 'string') {
-                    if (this.functions.has(val)) return `[func]`;
+                    // Check if it's an anonymous lambda - show its definition
+                    if (val.startsWith('@@Anon@') && this.functions.has(val)) {
+                        return formatFuncDef(val);
+                    }
+                    if (this.functions.has(val)) return formatFuncDef(val);
                     return val;
                 }
                 if (val.value !== undefined) return val.value.toString();
                 return val.toString();
             };
             
+            // Helper to add nested lines for objects/lists
+            const addNestedLines = (val, baseIndent) => {
+                if (val.type === 'sequence' && val.values) {
+                    val.values.forEach((item, idx) => {
+                        const itemStr = item?.value !== undefined ? item.value.toString() : 
+                                       (item?.type === 'string' ? item.value : item?.toString() || 'undefined');
+                        lines.push(`${baseIndent}  [${idx + 1}] ${itemStr}`);
+                    });
+                }
+                if (val.type === 'object' && val.properties) {
+                    for (const [k, v] of val.properties) {
+                        const vStr = v?.value !== undefined ? v.value.toString() : (v?.toString() || 'undefined');
+                        lines.push(`${baseIndent}  ${k} = ${vStr}`);
+                    }
+                }
+            };
+            
             // First line: definition/value
             let firstLine = normalizedName;
+            let isObjectVar = false;
+            let objectVar = null;
+            
             if (this.functions.has(normalizedName)) {
                 const funcDef = this.functions.get(normalizedName);
                 if (funcDef.type === 'object_function') {
@@ -298,28 +359,54 @@ export const ObjectFunctions = {
                     firstLine = `${normalizedName} [builtin]`;
                 }
             } else if (this.variables.has(normalizedName)) {
-                firstLine = `${normalizedName} = ${safeFormat(this.variables.get(normalizedName))}`;
+                const varVal = this.variables.get(normalizedName);
+                if (varVal && varVal.type === 'object') {
+                    // Object variable - show {Object} on first line
+                    firstLine = `{Object}`;
+                    isObjectVar = true;
+                    objectVar = varVal;
+                } else {
+                    firstLine = `${normalizedName} = ${formatValue(varVal)}`;
+                }
             } else {
                 firstLine = `${normalizedName} [not found]`;
             }
             lines.push(firstLine);
             
-            // Properties
-            const props = this.getDecorations(normalizedName);
-            if (props && props.size > 0) {
-                for (const [key, value] of props) {
+            // For object variables, show internal properties first
+            if (isObjectVar && objectVar && objectVar.properties) {
+                for (const [key, value] of objectVar.properties) {
                     if (filter !== undefined && filter !== null) {
-                        // For lazy functions, filter comes in as raw string like "deg" or '"deg"'
                         let filterStr = filter;
                         if (typeof filter === 'string') {
-                            // Strip quotes if present
                             filterStr = filter.replace(/^["']|["']$/g, '');
                         } else if (filter?.type === 'string') {
                             filterStr = filter.value;
                         }
                         if (filterStr && !key.includes(filterStr)) continue;
                     }
-                    lines.push(`  ${key} = ${safeFormat(value)}`);
+                    lines.push(`  ${key} = ${formatValue(value)}`);
+                }
+            }
+            
+            // Properties (decorations)
+            const props = this.getDecorations(normalizedName);
+            if (props && props.size > 0) {
+                for (const [key, value] of props) {
+                    if (filter !== undefined && filter !== null) {
+                        let filterStr = filter;
+                        if (typeof filter === 'string') {
+                            filterStr = filter.replace(/^["']|["']$/g, '');
+                        } else if (filter?.type === 'string') {
+                            filterStr = filter.value;
+                        }
+                        if (filterStr && !key.includes(filterStr)) continue;
+                    }
+                    lines.push(`  ${key} = ${formatValue(value)}`);
+                    // Add nested details for objects and lists
+                    if (value?.type === 'object' || value?.type === 'sequence') {
+                        addNestedLines(value, "  ");
+                    }
                 }
             }
             

@@ -123,6 +123,15 @@ describe('StdLib Integration', () => {
         expect(res.result.values[2].toString()).toBe("4");
     });
 
+    it('should support multi-param Lambda with parentheses in HOC', () => {
+        // MAP([1,2,3], (x, i) -> i*x) should use index (1-based)
+        const res = vm.processInput('MAP([10, 20, 30], (x, i) -> i * x)');
+        if (res.type === 'error') console.error("MULTI-LAMBDA ERROR:", res.message);
+        expect(res.result.values[0].toString()).toBe("10");  // 1 * 10
+        expect(res.result.values[1].toString()).toBe("40");  // 2 * 20
+        expect(res.result.values[2].toString()).toBe("90");  // 3 * 30
+    });
+
     it('should support IRANGE (integer range) generation', () => {
         const res = vm.processInput('IRANGE(1, 4)');
         if (res.type === 'error') console.error("IRANGE ERROR:", res.message);

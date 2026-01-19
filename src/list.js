@@ -181,7 +181,7 @@ Examples:
             for (let i = 0; i < seq.values.length; i++) {
                 const item = seq.values[i];
                 const itemStr = this.formatValueWithPrefix(item);
-                const indexStr = (i + 1).toString();
+                const indexStr = `0d${i + 1}`;  // Use 0d prefix for decimal literal
                 // Call function with (element, index, list)
                 const expr = `${fname}(${itemStr}, ${indexStr}, ${listStr})`;
                 const r = this.evaluateExpression(expr, chain);
@@ -229,7 +229,7 @@ Examples:
             for (let i = 0; i < seq.values.length; i++) {
                 const item = seq.values[i];
                 const itemStr = this.formatValueWithPrefix(item);
-                const indexStr = (i + 1).toString();
+                const indexStr = `0d${i + 1}`;  // Use 0d prefix for decimal literal
                 // Call function with (element, index, list)
                 const expr = `${fname}(${itemStr}, ${indexStr}, ${listStr})`;
                 const r = this.evaluateExpression(expr, chain);
@@ -284,7 +284,7 @@ Examples:
                 const item = seq.values[i];
                 const accStr = this.formatValueWithPrefix(accumulator);
                 const itemStr = this.formatValueWithPrefix(item);
-                const indexStr = (i + 1).toString();
+                const indexStr = `0d${i + 1}`;  // Use 0d prefix for decimal literal
                 // Call function with (accumulator, element, index, list)
                 const expr = `${fname}(${accStr}, ${itemStr}, ${indexStr}, ${listStr})`;
                 const r = this.evaluateExpression(expr, chain);
