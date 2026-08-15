@@ -4,7 +4,7 @@
     "type": "module",
     "main": "src/index.js",
     "dependencies": {
-        "@ratmath/core": "^0.3.0",
+        "@ratmath/core": "^0.4.0",
         "@ratmath/algebra": "^0.2.0"
     }
 }
